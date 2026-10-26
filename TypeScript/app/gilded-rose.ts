@@ -22,7 +22,7 @@ export class GildedRose {
       if (this.items[i].name != 'Aged Brie' && this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
         if (this.items[i].quality > 0) {
           if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-            this.items[i].quality = this.items[i].quality - 1
+            this.decreaseQuality(this.items[i]);
           }
         }
       } else {
@@ -50,7 +50,7 @@ export class GildedRose {
           if (this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
             if (this.items[i].quality > 0) {
               if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                this.items[i].quality = this.items[i].quality - 1
+                this.decreaseQuality(this.items[i]);
               }
             }
           } else {
@@ -65,5 +65,23 @@ export class GildedRose {
     }
 
     return this.items;
+  }
+
+  private isConjured(item: Item): boolean {
+    return item.name.startsWith('Conjured');
+  }
+
+  // Itens "Conjured" (mágicos) degradam a qualidade duas vezes mais rápido
+  // que itens comuns: -2 por dia, e após a expiração os dois decrementos
+  // somam -4 por dia. A qualidade nunca fica negativa.
+  private decreaseQuality(item: Item): void {
+    if (this.isConjured(item)) {
+      item.quality = item.quality - 2;
+      if (item.quality < 0) {
+        item.quality = 0;
+      }
+    } else {
+      item.quality = item.quality - 1;
+    }
   }
 }
